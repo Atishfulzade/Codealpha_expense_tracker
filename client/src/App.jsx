@@ -6,7 +6,6 @@ import Income from "./page/Income";
 import Expense from "./page/Expense";
 import Payment from "./page/Payment";
 import Cards from "./page/Card";
-import AlertDialogSlide from "./component/DialogBox";
 import Setting from "./page/Setting";
 import Help from "./page/Help";
 function App() {
@@ -14,13 +13,23 @@ function App() {
 
   return (
     <>
-      {showPopup && <AlertDialogSlide setShowPopup={setShowPopup} />}
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Layout />}>
-            <Route index element={<Dashboard />} />
-            <Route path="income" element={<Income />} />
-            <Route path="expense" element={<Expense />} />
+            <Route
+              index
+              element={
+                <Dashboard showPopup={showPopup} setShowPopup={setShowPopup} />
+              }
+            />
+            <Route
+              path="income"
+              element={<Income setShowPopup={setShowPopup} />}
+            />
+            <Route
+              path="expense"
+              element={<Expense setShowPopup={setShowPopup} />}
+            />
             <Route path="payments" element={<Payment />} />
             <Route path="mycards" element={<Cards />} />
             <Route path="setting" element={<Setting />} />

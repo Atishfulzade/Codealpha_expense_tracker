@@ -1,18 +1,19 @@
 import * as React from "react";
 import { LineChart } from "@mui/x-charts/LineChart";
 
-const uData = [4000, 3000, 2000, 2780, 1890, 2390, 3490];
-const pData = [2400, 1398, 9800, 3908, 4800, 3800, 4300];
-const xLabels = [0, 2000, 4000, 6000, 8000, 10000, 12000];
+export default function SimpleLineChart({ userData }) {
+  const expense = userData?.[0]?.expenses?.map((item) => item.amount) || [];
+  const income = userData?.[0]?.incomes.map((item) => item.amount) || [];
 
-export default function SimpleLineChart() {
+  const xLabels = [0, 2000, 4000, 6000, 8000, 10000, 12000]; // Example data
+
   return (
     <LineChart
       width={500}
       height={300}
       series={[
-        { data: pData, label: "pv" },
-        { data: uData, label: "uv" },
+        { data: income, label: "Income" },
+        { data: expense, label: "Expense" },
       ]}
       xAxis={[{ scaleType: "point", data: xLabels }]}
     />

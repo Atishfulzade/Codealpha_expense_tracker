@@ -33,22 +33,6 @@ function createData(id, name, calories, fat, carbs, protein) {
   };
 }
 
-const rows = [
-  createData(1, "Cupcake", 305, 3.7, 67, 4.3),
-  createData(2, "Donut", 452, 25.0, 51, 4.9),
-  createData(3, "Eclair", 262, 16.0, 24, 6.0),
-  createData(4, "Frozen yoghurt", 159, 6.0, 24, 4.0),
-  createData(5, "Gingerbread", 356, 16.0, 49, 3.9),
-  createData(6, "Honeycomb", 408, 3.2, 87, 6.5),
-  createData(7, "Ice cream sandwich", 237, 9.0, 37, 4.3),
-  createData(8, "Jelly Bean", 375, 0.0, 94, 0.0),
-  createData(9, "KitKat", 518, 26.0, 65, 7.0),
-  createData(10, "Lollipop", 392, 0.2, 98, 0.0),
-  createData(11, "Marshmallow", 318, 0, 81, 2.0),
-  createData(12, "Nougat", 360, 19.0, 9, 37.0),
-  createData(13, "Oreo", 437, 18.0, 63, 4.0),
-];
-
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
     return -1;
@@ -86,31 +70,25 @@ const headCells = [
     id: "name",
     numeric: false,
     disablePadding: true,
-    label: "Dessert (100g serving)",
+    label: "Title",
   },
   {
-    id: "calories",
-    numeric: true,
+    id: "category",
+    numeric: false,
     disablePadding: false,
-    label: "Calories",
+    label: "Category",
   },
   {
-    id: "fat",
+    id: "amount",
     numeric: true,
     disablePadding: false,
-    label: "Fat (g)",
+    label: "Amount",
   },
   {
-    id: "carbs",
-    numeric: true,
+    id: "source",
+    numeric: false,
     disablePadding: false,
-    label: "Carbs (g)",
-  },
-  {
-    id: "protein",
-    numeric: true,
-    disablePadding: false,
-    label: "Protein (g)",
+    label: "Source",
   },
 ];
 
@@ -215,7 +193,7 @@ function EnhancedTableToolbar(props) {
 
       {numSelected > 0 ? (
         <Tooltip title="Delete">
-          <IconButton>
+          <IconButton onClick={deleteTransaction}>
             <DeleteIcon />
           </IconButton>
         </Tooltip>
@@ -230,13 +208,44 @@ EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
 };
 
-export default function EnhancedTable() {
+export default function EnhancedTable({ userData }) {
   const [order, setOrder] = React.useState("asc");
   const [orderBy, setOrderBy] = React.useState("calories");
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
+
+  async function deleteTransaction(transactionId) {
+    try {
+      await axios.delete(`/people/:transactionId/expense`);
+      console.log("Transaction deleted successfully");
+    } catch (error) {
+      console.error("Error deleting transaction:", error);
+    }
+  }
+  const rows = [
+    ...(userData?.[0].incomes?.map((item, index) =>
+      createData(
+        index + 1,
+        item.title,
+        item.category,
+        item.amount,
+        item.source,
+        item.note
+      )
+    ) || []),
+    ...(userData?.[0].expenses?.map((item, index) =>
+      createData(
+        index + 1,
+        item.title,
+        item.category,
+        item.amount,
+        item.source,
+        item.note
+      )
+    ) || []),
+  ];
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === "asc";

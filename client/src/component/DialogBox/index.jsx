@@ -8,36 +8,46 @@ import Slide from "@mui/material/Slide";
 import { TextField, Box } from "@mui/material";
 import { useFormik } from "formik";
 import axios from "axios";
+import { useDispatch } from "react-redux";
+import { setName } from "../../store/nameSlice";
+import { setOpen } from "../../store/dialogSlice";
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
-React.useState(() => {
-  try {
-    const response = axios.get("/");
-  } catch (error) {}
-}, []);
+
 export default function AlertDialogSlide({ setShowPopup }) {
+  const [person, setPerson] = React.useState("");
+  const dispatch = useDispatch();
   const validate = (values) => {
-    const error = {};
+    const errors = {};
     if (!values.name) {
-      error.name = "Name is required";
+      errors.name = "Name is required";
     }
     if (!values.balance) {
-      error.name = "Balance is required";
+      errors.balance = "Balance is required";
     }
-    return error;
+    return errors;
   };
+
   const formik = useFormik({
     initialValues: {
       name: "",
       balance: "",
     },
     validate,
-    onSubmit: (values) => {
-      console.log(values);
-      setShowPopup(false);
+    onSubmit: async (values) => {
+      try {
+        await axios.post("http://localhost:3000/people", values);
+        dispatch(setName(values.name));
+        setShowPopup(false);
+        dispatch(setOpen(false));
+        localStorage.setItem("state", false);
+      } catch (error) {
+        console.error("Error:", error);
+      }
     },
   });
+
   return (
     <Dialog
       open={open}
@@ -65,6 +75,8 @@ export default function AlertDialogSlide({ setShowPopup }) {
               name="name"
               value={formik.values.name}
               onChange={formik.handleChange}
+              error={formik.touched.name && Boolean(formik.errors.name)}
+              helperText={formik.touched.name && formik.errors.name}
             />
           </div>
           <div>
@@ -76,6 +88,8 @@ export default function AlertDialogSlide({ setShowPopup }) {
               name="balance"
               value={formik.values.balance}
               onChange={formik.handleChange}
+              error={formik.touched.balance && Boolean(formik.errors.balance)}
+              helperText={formik.touched.balance && formik.errors.balance}
             />
           </div>
           <Button

@@ -2,9 +2,11 @@ import React from "react";
 import IncomeForm from "../../component/IncomeForm";
 import { Container, Grid } from "@mui/material";
 import EnhancedTable from "../../component/RecentTransaction";
-const Expense = () => {
+import { useSelector } from "react-redux";
+const Expense = ({ setShowPopup }) => {
+  const model = useSelector((state) => state.model);
   const expense = {
-    type: "expense",
+    category: "expense",
     source: [
       "Health",
       "Investment",
@@ -16,6 +18,8 @@ const Expense = () => {
       "Other",
     ],
   };
+  setShowPopup(model?.isOpen);
+
   return (
     <Container>
       <Grid container spacing={2}>

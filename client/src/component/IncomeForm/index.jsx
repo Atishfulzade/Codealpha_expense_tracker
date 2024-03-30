@@ -5,7 +5,11 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import { useFormik } from "formik";
+import { useSelector } from "react-redux";
+import axios from "axios";
 const IncomeForm = ({ value }) => {
+  const user = useSelector((state) => state.name);
+
   const validate = (values) => {
     const errors = {};
     if (!values.title) {
@@ -18,6 +22,7 @@ const IncomeForm = ({ value }) => {
 
     return errors;
   };
+
   const formik = useFormik({
     initialValues: {
       title: "",
@@ -26,8 +31,18 @@ const IncomeForm = ({ value }) => {
       note: "",
     },
     validate,
-    onSubmit: (values) => {
-      console.log({ values, type: value });
+    onSubmit: async (values, { resetForm }) => {
+      try {
+        const formData = { ...values, category: value.category };
+        console.log(formData);
+        await axios.post(
+          `http://localhost:3000/people/${user.name}/${value.category}`,
+          formData
+        );
+        resetForm();
+      } catch (error) {
+        console.error("Error:", error);
+      }
     },
   });
 
@@ -48,14 +63,14 @@ const IncomeForm = ({ value }) => {
       autoComplete="off"
     >
       <Typography paddingBottom={1} marginLeft={1} variant="h6" color="primary">
-        {capitalizeFirstLetter(`Add ${value.type}`)}
+        {capitalizeFirstLetter(`Add ${value.category}`)}
       </Typography>
       <Divider />
       <TextField
         required
         name="title"
         id="outlined-required"
-        label={capitalizeFirstLetter(`${value.type} title`)}
+        label={capitalizeFirstLetter(`${value.category} title`)}
         style={{ marginTop: "20px", width: "97%" }}
         onChange={formik.handleChange}
         value={formik.values.title}
@@ -65,7 +80,7 @@ const IncomeForm = ({ value }) => {
         id="outlined-required"
         type="number"
         name="amount"
-        label={capitalizeFirstLetter(`${value.type} amount`)}
+        label={capitalizeFirstLetter(`${value.category} amount`)}
         style={{ marginTop: "20px", width: "97%" }}
         onChange={formik.handleChange}
         value={formik.values.amount}
@@ -74,13 +89,13 @@ const IncomeForm = ({ value }) => {
         style={{ width: "100%", marginLeft: "9px", marginTop: "20px" }}
       >
         <InputLabel id="demo-simple-select-label">
-          {capitalizeFirstLetter(`${value.type} category`)}
+          {capitalizeFirstLetter(`${value.category} category`)}
         </InputLabel>
         <Select
           labelId="demo-simple-select-label"
           id="demo-simple-select"
           name="source"
-          label={`${value.type} category`}
+          label={`${value.category} category`}
           style={{ width: "97%" }}
           onChange={formik.handleChange}
           value={formik.values.source}
@@ -114,7 +129,7 @@ const IncomeForm = ({ value }) => {
         }}
         type="submit"
       >
-        {`Add ${value.type}`}
+        {`Add ${value.category}`}
       </Button>
     </Box>
   );
