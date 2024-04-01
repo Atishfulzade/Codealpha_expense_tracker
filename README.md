@@ -31,7 +31,7 @@ Expense Tracker is a web application built with React, Redux, Material-UI, Node.
 
 1. **Clone the Repository:**
    ```
-   git clone https://github.com/yourusername/expense-tracker.git
+   git clone [https://github.com/Atishfulzade/Codealpha_expense_tracker.git](https://github.com/Atishfulzade/Codealpha_expense_tracker.git)
    ```
 
 2. **Install Dependencies:**
